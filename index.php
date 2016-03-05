@@ -7,18 +7,18 @@ if (isset($_SESSION['user']) != "") {
 }
 
 if (isset($_POST['btn-login'])) {
+    $uname = mysql_real_escape_string($_POST['uname']);
     $email = mysql_real_escape_string($_POST['email']);
-    $upass = mysql_real_escape_string($_POST['pass']);
 
+    $uname = trim($uname);
     $email = trim($email);
-    $upass = trim($upass);
 
-    $res = mysql_query("SELECT user_id, user_name, user_pass FROM users WHERE user_email='$email'");
+    $res = mysql_query("SELECT user_id, user_name FROM users WHERE user_email='$email'");
     $row = mysql_fetch_array($res);
 
     $count = mysql_num_rows($res); // if uname/pass correct it returns must be 1 row
 
-    if ($count == 1 && $row['user_pass'] == md5($upass)) {
+    if ($count == 1 && $row['user_name'] == $uname) {
         $_SESSION['user'] = $row['user_id'];
         header("Location: home.php");
     } else {
@@ -31,11 +31,9 @@ if (isset($_POST['btn-login'])) {
 if (isset($_POST['btn-signup'])) {
     $uname = mysql_real_escape_string($_POST['uname']);
     $email = mysql_real_escape_string($_POST['email']);
-    $upass = md5(mysql_real_escape_string($_POST['pass']));
 
     $uname = trim($uname);
     $email = trim($email);
-    $upass = trim($upass);
 
     // email exist or not
     $query = "SELECT user_email FROM users WHERE user_email='$email'";
@@ -45,7 +43,7 @@ if (isset($_POST['btn-signup'])) {
 
     if ($count == 0) {
 
-        if (mysql_query("INSERT INTO users(user_name,user_email,user_pass) VALUES('$uname','$email','$upass')")) {
+        if (mysql_query("INSERT INTO users(user_name,user_email) VALUES('$uname','$email')")) {
             ?>
             <script>alert('successfully registered ');</script>
             <?php
@@ -90,39 +88,20 @@ if (isset($_POST['btn-signup'])) {
     <center>
         <div id="login-form">
             <form method="post">
-<!--                <table class="top" align="center" width="30%" border="0">
-        <tr>
-            <td><a href="register.php">Sign Up</a></td>
-            <td><a href="index.php">Log In</a></td>
-        </tr>
-    </table>
-    <table align="center" width="30%" border="0">
-        <tr>
-            <td><input type="text" name="email" placeholder="Your Email" required /></td>
-        </tr>
-        <tr>
-            <td><input type="password" name="pass" placeholder="Your Password" required /></td>
-        </tr>
-        <tr>
-            <td><button type="submit" name="btn-login">Sign In</button></td>
-        </tr>
-    </table>-->
-
                 <div class="tabs">
                     <ul class="tab-links">
                         <li class="active"><a href="#tab1">Log In</a></li>
                         <li><a href="#tab2">Create an Account</a></li>
                     </ul>
-
                     <div class="tab-content">
                         <div id="tab1" class="tab active">
                             <form method="post">
                                 <table align="center" border="0">
                                     <tr>
-                                        <td><input type="text" name="email" placeholder="Your Email" required /></td>
+                                        <td><input type="text" name="uname" placeholder="Name" required /></td>
                                     </tr>
                                     <tr>
-                                        <td><input type="password" name="pass" placeholder="Your Password" required /></td>
+                                        <td><input type="text" name="email" placeholder="Your Email" required /></td>
                                     </tr>
                                     <tr>
                                         <td><button type="submit" name="btn-login">Log In</button></td>
@@ -135,13 +114,10 @@ if (isset($_POST['btn-signup'])) {
                             <form method="post">
                                 <table align="center" border="0">
                                     <tr>
-                                        <td><input type="text" name="uname" placeholder="User Name" required /></td>
+                                        <td><input type="text" name="uname" placeholder="Name" required /></td>
                                     </tr>
                                     <tr>
                                         <td><input type="email" name="email" placeholder="Your Email" required /></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="password" name="pass" placeholder="Your Password" required /></td>
                                     </tr>
                                     <tr>
                                         <td><button type="submit" name="btn-signup">Sign Up</button></td>
@@ -151,7 +127,6 @@ if (isset($_POST['btn-signup'])) {
                         </div>
                     </div>
                 </div>
-
         </div>
     </center>
 </body>
